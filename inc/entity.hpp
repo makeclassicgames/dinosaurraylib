@@ -20,5 +20,8 @@ class Entity{
         void setVelocity(float x, float y);
         raylib::Vector2 getPosition() const;
         raylib::Vector2 getVelocity() const;
+        void addAnimation(const Animation& animation);
+        void setCurrentAnimation(int animationIndex);
+        void setScaleFactor(float scale);
 };
 #endif

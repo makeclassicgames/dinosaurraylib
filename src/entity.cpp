@@ -16,6 +16,7 @@ Entity::~Entity()
 void Entity::update()
 {
     this->position += this->velocity;
+    this->sprite->update();
 }
 void Entity::Draw()
 {
@@ -38,4 +39,19 @@ raylib::Vector2 Entity::getPosition() const
 raylib::Vector2 Entity::getVelocity() const
 {
     return this->velocity;
+}
+
+void Entity::addAnimation(const Animation& animation)
+{
+    this->sprite->addAnimation(animation);
+}
+
+void Entity::setCurrentAnimation(int animationIndex)
+{
+    this->sprite->setCurrentAnimation(animationIndex);
+}
+
+void Entity::setScaleFactor(float scale)
+{
+    this->sprite->setScaleFactor(scale);
 }

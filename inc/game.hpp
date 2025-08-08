@@ -4,6 +4,7 @@
 #include <vector>
 #include "entity.hpp"
 #include "input.hpp"
+#include "timer.hpp"
 
 #define JUMP_FORCE -110.0f // Adjust this value for jump height
 
@@ -20,6 +21,7 @@ class Player: public Entity
         int score;
         int lives;
         bool isJumping = false;
+        bool isCrouching = false;
     public:
         Player(int id, const char* texturePath, int x, int y, int width, int height);
         ~Player();
@@ -53,13 +55,13 @@ class Game
     private:
         raylib::Window* window;
         raylib::Color* textColor;
-        Entity* miSprite;
         enum status gameStatus;
         Player* player;
-        std::vector<Obstacle*> obstacles;
+        std::vector<Obstacle*>* obstacles;
         Input* input;
         raylib::Texture2D* background;
         Obstacle* obstacle1;
+        Timer* obstacleTimer;
     public:
         Game();
         ~Game();

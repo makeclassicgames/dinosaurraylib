@@ -3,15 +3,32 @@
 
 #include <raylib-cpp.hpp>
 
+typedef struct Animation {
+    raylib::Texture2D** texture;
+    int frameCount;
+    int currentFrame;
+    int frameWidth;
+    int frameHeight;
+    int frameTime;
+    int currentTime;
+} Animation;
+
 class Sprite
 {
     private:
-      raylib::Texture2D* texture2D;
-      raylib:: Rectangle* rect;
+    std::vector<Animation>* animations;
+    int currentAnimation;
+    float scaleFactor;
+  
     public:
         Sprite(const char* texturePath, float x, float y, float width, float height);
-        Sprite(const char* texturePath, raylib::Rectangle);
+        Sprite(const Animation& initialAnimation);
         ~Sprite();
+        void addAnimation(const Animation& animation);
+        void setCurrentAnimation(int index);
+        void removeAnimation(int index);
+        int getAnimationCount() const;
+        void setScaleFactor(float scale);
         void update();
         void Draw(int x, int y);
 };
