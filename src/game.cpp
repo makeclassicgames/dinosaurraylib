@@ -8,7 +8,7 @@ void obstacleSpawnCallback();
 
 Game::Game()
 {
-    gameStatus = RUNNING;
+    gameStatus = START;
 }
 
 Game::~Game()
@@ -18,7 +18,6 @@ Game::~Game()
     delete this->input;
     delete this->textColor;
     delete this->window;
-
 }
 
 void Game::Init(int screenWidth, int screenHeight)
@@ -34,9 +33,10 @@ void Game::Init(int screenWidth, int screenHeight)
     this->player->addAnimation(loadPlayerCrouchAnimation());
     this->player->addAnimation(loadPlayerDeathAnimation());
     this->player->setCurrentAnimation(1);
-    this->obstacles = new std::vector<Obstacle*>();
+    this->obstacles = new std::vector<Obstacle *>();
 
-    this->obstacleTimer = new Timer(180.0f, [this]() { this->spawnObstacle(); },true); // Spawn obstacles every 3 seconds
+    this->obstacleTimer = new Timer(180.0f, [this]()
+                                    { this->spawnObstacle(); }, true); // Spawn obstacles every 3 seconds
     this->obstacleTimer->Start();
 }
 
@@ -49,33 +49,47 @@ void Game::Update()
 {
     // Update game logic
     this->input->Update();
-    this->player->update(this->input);
-    this->obstacleTimer->update();
-    
+    if (this->gameStatus == START && this->input->IsActionPerformed(ACTION_JUMP))
+    {
+        this->SetStatus(RUNNING);
+    }
+    else
+    {
+        if (this->gameStatus == RUNNING)
+        {
+            this->player->update(this->input);
+            this->obstacleTimer->update();
+        }
+    }
+
     for (size_t i = 0; i < this->obstacles->size(); i++)
     {
-        Obstacle* obstacle = this->obstacles->at(i);
-        if(obstacle->getPosition().x < -100){
+        Obstacle *obstacle = this->obstacles->at(i);
+        if (obstacle->getPosition().x < -100)
+        {
             // Remove the obstacle from the vector
             this->obstacles->erase(this->obstacles->begin() + i);
             i--; // Decrement i to account for the removed obstacle
         }
-        obstacle->setVelocity(-5.0f, 0.0f);
-        obstacle->update();
+        else
+        {
+            obstacle->setVelocity(-5.0f, 0.0f);
+            obstacle->update();
+        }
     }
-    
 }
 
 void Game::Draw()
 {
     // Draw game elements
     ClearBackground(RAYWHITE);
-    this->printText("Press Space to Start", 190, 200, 20);
+    if (this->gameStatus == START)
+        this->printText("Press Space to Start", 190, 200, 20);
     // Draw Background
     this->background->Draw((Vector2){0, this->window->GetHeight() - (this->background->GetHeight() * 4.0f)}, 0.0f, 4.0f, WHITE);
     // Draw player
     this->player->Draw();
-    for(int i = 0; i < this->obstacles->size(); i++)
+    for (int i = 0; i < this->obstacles->size(); i++)
     {
         this->obstacles->at(i)->Draw();
     }
@@ -124,9 +138,9 @@ void Player::update(Input *input)
     }
     else if (this->position.y >= 315 && !this->isCrouching)
     {
-        this->isJumping = false; // Reset jumping state when on ground
-        this->position.y = 315;  // Ensure player stays on ground
-        this->setCurrentAnimation(1);//set run animation
+        this->isJumping = false;      // Reset jumping state when on ground
+        this->position.y = 315;       // Ensure player stays on ground
+        this->setCurrentAnimation(1); // set run animation
     }
 
     if (input->IsActionPerformed(ACTION_JUMP) && !this->isJumping)
@@ -141,16 +155,16 @@ void Player::update(Input *input)
         if (input->IsActionPerformed(ACTION_DOWN) && !this->isCrouching)
         {
             this->setCurrentAnimation(2);
-            this->position.y += 50; // Move player up when crouching
+            this->position.y += 50;   // Move player up when crouching
             this->isCrouching = true; // Set crouching state
         }
 
-        if(isCrouching && input->IsAction_Released(ACTION_DOWN)){
-            this->isCrouching = false; // Reset crouching state
-            this->position.y -= 50; // Move player down when standing up
+        if (isCrouching && input->IsAction_Released(ACTION_DOWN))
+        {
+            this->isCrouching = false;    // Reset crouching state
+            this->position.y -= 50;       // Move player down when standing up
             this->setCurrentAnimation(1); // Set to running animation
         }
-      
     }
 
     // TODO Refactor for use entity update
@@ -189,8 +203,8 @@ Obstacle::~Obstacle()
 
 Animation loadPlayerRunAnimation()
 {
-    AnimationBuilder* builder = new AnimationBuilder();
-    raylib::Texture2D** textures= new raylib::Texture2D *[2];
+    AnimationBuilder *builder = new AnimationBuilder();
+    raylib::Texture2D **textures = new raylib::Texture2D *[2];
     textures[0] = new raylib::Texture2D("resources/run0.png");
     textures[1] = new raylib::Texture2D("resources/run1.png");
     builder->SetTexture(textures);
@@ -199,18 +213,17 @@ Animation loadPlayerRunAnimation()
     builder->SetFrameHeight(95); // Height of the player sprite
     builder->SetFrameTime(10);   // Time per frame in milliseconds
     return *builder->Build();
-
 }
 
 Animation loadPlayerCrouchAnimation()
 {
-     AnimationBuilder* builder = new AnimationBuilder();
-    raylib::Texture2D** textures= new raylib::Texture2D *[2];
+    AnimationBuilder *builder = new AnimationBuilder();
+    raylib::Texture2D **textures = new raylib::Texture2D *[2];
     textures[0] = new raylib::Texture2D("resources/crouch0.png");
     textures[1] = new raylib::Texture2D("resources/crouch1.png");
     builder->SetTexture(textures);
     builder->SetFrameCount(2);
-    builder->SetFrameWidth(118);  // Width of the player sprite
+    builder->SetFrameWidth(118); // Width of the player sprite
     builder->SetFrameHeight(62); // Height of the player sprite
     builder->SetFrameTime(10);   // Time per frame in milliseconds
     return *builder->Build();
@@ -218,8 +231,8 @@ Animation loadPlayerCrouchAnimation()
 
 Animation loadPlayerDeathAnimation()
 {
-    AnimationBuilder* builder = new AnimationBuilder();
-    raylib::Texture2D** textures= new raylib::Texture2D *[1];
+    AnimationBuilder *builder = new AnimationBuilder();
+    raylib::Texture2D **textures = new raylib::Texture2D *[1];
     textures[0] = new raylib::Texture2D("resources/death0.png");
     builder->SetTexture(textures);
     builder->SetFrameCount(1);
@@ -227,11 +240,11 @@ Animation loadPlayerDeathAnimation()
     builder->SetFrameHeight(95); // Height of the player sprite
     builder->SetFrameTime(10);   // Time per frame in milliseconds
     return *builder->Build();
-   
 }
 
-void Game::spawnObstacle(){
-    Obstacle* newObstacle = new Obstacle(1, "resources/cactus0.png", 830, 300, 17, 35, ENEMY_TYPE_1);
+void Game::spawnObstacle()
+{
+    Obstacle *newObstacle = new Obstacle(1, "resources/cactus0.png", 830, 300, 17, 35, ENEMY_TYPE_1);
     newObstacle->setScaleFactor(4.0f); // Set scale factor for obstacle
     this->obstacles->push_back(newObstacle);
 }

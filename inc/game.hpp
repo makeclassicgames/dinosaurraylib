@@ -13,6 +13,7 @@
 
 enum status
 {
+    START,
     RUNNING,
     PAUSED,
     GAMEOVER
