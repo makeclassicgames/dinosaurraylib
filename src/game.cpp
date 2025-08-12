@@ -35,8 +35,9 @@ void Game::Init(int screenWidth, int screenHeight)
     this->player->addAnimation(loadPlayerDeathAnimation());
     this->player->setCurrentAnimation(1);
     this->obstacles = new std::vector<Obstacle*>();
-   
-    this->obstacleTimer = new Timer(180.0f, obstacleSpawnCallback, true); // Spawn obstacles every 2 seconds
+
+    this->obstacleTimer = new Timer(180.0f, [this]() { this->spawnObstacle(); },true); // Spawn obstacles every 3 seconds
+    this->obstacleTimer->Start();
 }
 
 bool Game::isWindowClosed()
@@ -53,8 +54,14 @@ void Game::Update()
     
     for (size_t i = 0; i < this->obstacles->size(); i++)
     {
-        this->obstacles->at(i)->setVelocity(-5.0f, 0.0f);
-        this->obstacles->at(i)->update();
+        Obstacle* obstacle = this->obstacles->at(i);
+        if(obstacle->getPosition().x < -100){
+            // Remove the obstacle from the vector
+            this->obstacles->erase(this->obstacles->begin() + i);
+            i--; // Decrement i to account for the removed obstacle
+        }
+        obstacle->setVelocity(-5.0f, 0.0f);
+        obstacle->update();
     }
     
 }
@@ -63,13 +70,15 @@ void Game::Draw()
 {
     // Draw game elements
     ClearBackground(RAYWHITE);
-    this->printText("Welcome to Raylib C++ Starter Kit!", 190, 200, 20);
+    this->printText("Press Space to Start", 190, 200, 20);
     // Draw Background
     this->background->Draw((Vector2){0, this->window->GetHeight() - (this->background->GetHeight() * 4.0f)}, 0.0f, 4.0f, WHITE);
     // Draw player
     this->player->Draw();
-    // Draw obstacle
-    this->obstacle1->Draw();
+    for(int i = 0; i < this->obstacles->size(); i++)
+    {
+        this->obstacles->at(i)->Draw();
+    }
 }
 
 void Game::deInit()
@@ -180,50 +189,49 @@ Obstacle::~Obstacle()
 
 Animation loadPlayerRunAnimation()
 {
-    Animation anim;
-    anim.texture = new raylib::Texture2D *[2];
-    anim.texture[0] = new raylib::Texture2D("resources/run0.png");
-    anim.texture[1] = new raylib::Texture2D("resources/run1.png");
-    anim.frameCount = 2;
-    anim.currentFrame = 0;
-    anim.frameWidth = 90;  // Width of the player sprite
-    anim.frameHeight = 95; // Height of the player sprite
-    anim.frameTime = 10;   // Time per frame in milliseconds
-    anim.currentTime = 0;  // Initialize current time
-    return anim;
+    AnimationBuilder* builder = new AnimationBuilder();
+    raylib::Texture2D** textures= new raylib::Texture2D *[2];
+    textures[0] = new raylib::Texture2D("resources/run0.png");
+    textures[1] = new raylib::Texture2D("resources/run1.png");
+    builder->SetTexture(textures);
+    builder->SetFrameCount(2);
+    builder->SetFrameWidth(90);  // Width of the player sprite
+    builder->SetFrameHeight(95); // Height of the player sprite
+    builder->SetFrameTime(10);   // Time per frame in milliseconds
+    return *builder->Build();
+
 }
 
 Animation loadPlayerCrouchAnimation()
 {
-    Animation anim;
-    anim.texture = new raylib::Texture2D *[2];
-    anim.texture[0] = new raylib::Texture2D("resources/crouch0.png");
-    anim.texture[1] = new raylib::Texture2D("resources/crouch1.png");
-    anim.frameCount = 2;
-    anim.currentFrame = 0;
-    anim.frameWidth = 118;  // Width of the player sprite
-    anim.frameHeight = 62; // Height of the player sprite
-    anim.frameTime = 10;   // Time per frame in milliseconds
-    anim.currentTime = 0;  // Initialize current time
-    return anim;
+     AnimationBuilder* builder = new AnimationBuilder();
+    raylib::Texture2D** textures= new raylib::Texture2D *[2];
+    textures[0] = new raylib::Texture2D("resources/crouch0.png");
+    textures[1] = new raylib::Texture2D("resources/crouch1.png");
+    builder->SetTexture(textures);
+    builder->SetFrameCount(2);
+    builder->SetFrameWidth(118);  // Width of the player sprite
+    builder->SetFrameHeight(62); // Height of the player sprite
+    builder->SetFrameTime(10);   // Time per frame in milliseconds
+    return *builder->Build();
 }
 
 Animation loadPlayerDeathAnimation()
 {
-    Animation anim;
-    anim.texture = new raylib::Texture2D *[2];
-    anim.texture[0] = new raylib::Texture2D("resources/death0.png");
-    anim.frameCount = 1;
-    anim.currentFrame = 0;
-    anim.frameWidth = 90;  // Width of the player sprite
-    anim.frameHeight = 95; // Height of the player sprite
-    anim.frameTime = 10;   // Time per frame in milliseconds
-    anim.currentTime = 0;  // Initialize current time
-    return anim;
+    AnimationBuilder* builder = new AnimationBuilder();
+    raylib::Texture2D** textures= new raylib::Texture2D *[1];
+    textures[0] = new raylib::Texture2D("resources/death0.png");
+    builder->SetTexture(textures);
+    builder->SetFrameCount(1);
+    builder->SetFrameWidth(90);  // Width of the player sprite
+    builder->SetFrameHeight(95); // Height of the player sprite
+    builder->SetFrameTime(10);   // Time per frame in milliseconds
+    return *builder->Build();
+   
 }
 
-void obstacleSpawnCallback(){
+void Game::spawnObstacle(){
     Obstacle* newObstacle = new Obstacle(1, "resources/cactus0.png", 830, 300, 17, 35, ENEMY_TYPE_1);
     newObstacle->setScaleFactor(4.0f); // Set scale factor for obstacle
-    obstacles.push_back(newObstacle);
+    this->obstacles->push_back(newObstacle);
 }

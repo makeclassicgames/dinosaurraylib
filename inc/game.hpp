@@ -8,6 +8,9 @@
 
 #define JUMP_FORCE -110.0f // Adjust this value for jump height
 
+
+
+
 enum status
 {
     RUNNING,
@@ -73,6 +76,7 @@ class Game
         void deInit();
         enum status GetStatus() const;
         void SetStatus(enum status newStatus);
+        void spawnObstacle();
 
 };
 

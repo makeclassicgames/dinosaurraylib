@@ -13,6 +13,24 @@ typedef struct Animation {
     int currentTime;
 } Animation;
 
+class AnimationBuilder{
+    private:
+        raylib::Texture2D** texture;
+        int frameCount;
+        int frameWidth;
+        int frameHeight;
+        int frameTime;
+    public:
+       AnimationBuilder();
+       ~AnimationBuilder();
+       void SetTexture(raylib::Texture2D** texture);
+       void SetFrameCount(int frameCount);
+       void SetFrameWidth(int frameWidth);
+       void SetFrameHeight(int frameHeight);
+       void SetFrameTime(int frameTime);
+       Animation* Build();
+};
+
 class Sprite
 {
     private:

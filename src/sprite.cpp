@@ -3,16 +3,13 @@
 
 Sprite::Sprite(const char* texturePath, float x, float y, float width, float height) {
     this->animations = new std::vector<Animation>();
-    Animation initialAnimation;
-    initialAnimation.texture = new raylib::Texture2D*[1];
-    initialAnimation.texture[0] = new raylib::Texture2D(texturePath);
-    initialAnimation.frameCount = 1;
-    initialAnimation.currentFrame = 0;
-    initialAnimation.frameWidth = static_cast<int>(width);
-    initialAnimation.frameHeight = static_cast<int>(height);
-    initialAnimation.frameTime = 10; // Default frame time
-    initialAnimation.currentTime = 0;
-
+    AnimationBuilder* builder = new AnimationBuilder();
+    builder->SetTexture(new raylib::Texture2D*[1]{ new raylib::Texture2D(texturePath) });
+    builder->SetFrameCount(1);
+    builder->SetFrameWidth(static_cast<int>(width));
+    builder->SetFrameHeight(static_cast<int>(height));
+    builder->SetFrameTime(10);
+    Animation initialAnimation = *builder->Build();
     this->animations->push_back(initialAnimation);
     this->currentAnimation = 0;
     this->scaleFactor = 1.0f; // Default scale factor
@@ -71,4 +68,51 @@ void Sprite::Draw(int x, int y ){
 
 void Sprite::setScaleFactor(float scale) {
     this->scaleFactor = scale;
+}
+
+//Animation Builder
+
+AnimationBuilder::AnimationBuilder() : texture(nullptr), frameCount(0), frameWidth(0), frameHeight(0), frameTime(0) {
+    // Nothing.
+}
+
+AnimationBuilder::~AnimationBuilder() {
+    if (texture) {
+        for (int i = 0; i < frameCount; ++i) {
+            delete texture[i];
+        }
+        delete[] texture;
+    }
+}
+
+void AnimationBuilder::SetTexture(raylib::Texture2D** texture) {
+    this->texture = texture;
+}
+
+void AnimationBuilder::SetFrameCount(int frameCount) {
+    this->frameCount = frameCount;
+}
+
+void AnimationBuilder::SetFrameWidth(int frameWidth) {
+    this->frameWidth = frameWidth;
+}
+
+void AnimationBuilder::SetFrameHeight(int frameHeight) {
+    this->frameHeight = frameHeight;
+}
+
+void AnimationBuilder::SetFrameTime(int frameTime) {
+    this->frameTime = frameTime;
+}
+
+Animation* AnimationBuilder::Build() {
+    Animation* anim = new Animation();
+    anim->texture = this->texture;
+    anim->frameCount = this->frameCount;
+    anim->frameWidth = this->frameWidth;
+    anim->frameHeight = this->frameHeight;
+    anim->frameTime = this->frameTime;
+    anim->currentFrame = 0;
+    anim->currentTime = 0;
+    return anim;
 }

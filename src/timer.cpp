@@ -1,6 +1,6 @@
 #include "timer.hpp"
 
-Timer::Timer(float duration, void (*callback)(), bool repeat=false){
+Timer::Timer(float duration, std::function<void()> callback, bool repeat){
     this->duration=duration;
     this->callback = callback;
     this->repeat = repeat;
@@ -48,7 +48,7 @@ void Timer::update(){
     }
 }
 
-void Timer::setCallback(void (*callback)())
+void Timer::setCallback(std::function<void()> callback)
 {
     this->callback = callback;
 }
