@@ -1,5 +1,7 @@
 #include "game.hpp"
 
+#define DEBUG 0
+
 Animation loadPlayerRunAnimation();
 Animation loadPlayerCrouchAnimation();
 Animation loadPlayerDeathAnimation();
@@ -91,8 +93,10 @@ void Game::Update()
                                             player->getPosition().y + playerCollider.yoffset, playerCollider.width, playerCollider.height};
             raylib::Rectangle ObstacleRect = {obstacle->getPosition().x + ObstacleCollider.xoffset,
                                               obstacle->getPosition().y + ObstacleCollider.yoffset, ObstacleCollider.width, ObstacleCollider.height};
-            ObstacleRect.Draw(RED);
-            Playerrect.Draw(BLUE);
+            #if DEBUG == 1
+                ObstacleRect.Draw(RED);
+                Playerrect.Draw(BLUE);
+            #endif
             if (CheckCollisionRecs(Playerrect, ObstacleRect))
             {
                 // Handle collision
