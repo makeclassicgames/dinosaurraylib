@@ -55,3 +55,16 @@ void Entity::setScaleFactor(float scale)
 {
     this->sprite->setScaleFactor(scale);
 }
+
+void Entity::setCollider(float xoffset, float yoffset, float width, float height)
+{
+    this->collider.xoffset = xoffset;
+    this->collider.yoffset = yoffset;
+    this->collider.width = width;
+    this->collider.height = height;
+}
+
+CollisionRect Entity::getCollider() const
+{
+    return this->collider;
+}

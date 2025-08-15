@@ -3,7 +3,14 @@
 
 #include "sprite.hpp"
 
-#define GRAVITY 1.0f
+#define GRAVITY 2.0f
+
+typedef struct CollisionRect {
+    float xoffset;
+    float yoffset;
+    float width;
+    float height;
+} CollisionRect;
 
 class Entity{
     protected:
@@ -11,6 +18,7 @@ class Entity{
     Sprite* sprite;
     raylib::Vector2 position;
     raylib::Vector2 velocity;
+    CollisionRect collider;
     public:
         Entity(int id, const char* texturePath, int x, int y, int width, int height);
         ~Entity();
@@ -23,5 +31,8 @@ class Entity{
         void addAnimation(const Animation& animation);
         void setCurrentAnimation(int animationIndex);
         void setScaleFactor(float scale);
+        void setCollider(float xoffset, float yoffset, float width, float height);
+        CollisionRect getCollider() const;
+
 };
 #endif

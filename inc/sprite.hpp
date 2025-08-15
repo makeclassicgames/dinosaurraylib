@@ -46,6 +46,7 @@ class Sprite
         void setCurrentAnimation(int index);
         void removeAnimation(int index);
         int getAnimationCount() const;
+        Animation* getCurrentAnimation() const;
         void setScaleFactor(float scale);
         void update();
         void Draw(int x, int y);

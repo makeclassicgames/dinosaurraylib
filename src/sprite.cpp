@@ -70,6 +70,10 @@ void Sprite::setScaleFactor(float scale) {
     this->scaleFactor = scale;
 }
 
+Animation * Sprite::getCurrentAnimation() const {
+    return &this->animations->at(this->currentAnimation);
+}
+
 //Animation Builder
 
 AnimationBuilder::AnimationBuilder() : texture(nullptr), frameCount(0), frameWidth(0), frameHeight(0), frameTime(0) {

@@ -6,7 +6,7 @@
 #include "input.hpp"
 #include "timer.hpp"
 
-#define JUMP_FORCE -110.0f // Adjust this value for jump height
+#define JUMP_FORCE -140.0f // Adjust this value for jump height
 
 
 
@@ -41,7 +41,8 @@ enum EnemyType
 {
     ENEMY_TYPE_1,
     ENEMY_TYPE_2,
-    ENEMY_TYPE_3
+    ENEMY_TYPE_3,
+    ENEMY_TYPE_PETRO
 };
 
 class Obstacle: public Entity
@@ -51,6 +52,7 @@ class Obstacle: public Entity
     public:
         Obstacle(int id, const char* texturePath, int x, int y, int width, int height, EnemyType type);
         ~Obstacle();
+        EnemyType getType() const;
 
 };
 
@@ -63,7 +65,8 @@ class Game
         Player* player;
         std::vector<Obstacle*>* obstacles;
         Input* input;
-        raylib::Texture2D* background;
+        raylib::Texture2D* background[2];
+        int backgroundOffset;
         Obstacle* obstacle1;
         Timer* obstacleTimer;
     public:
